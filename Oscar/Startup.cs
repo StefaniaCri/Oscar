@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Oscar.Authentication;
 using Oscar.Data;
 using Oscar.Models.Constants;
 using Oscar.Models.Entities;
@@ -55,6 +54,7 @@ namespace Oscar
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Oscar", Version = "v1" });
             });
             services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnString")));
+           /*
             // For Identity  
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>()
@@ -81,7 +81,7 @@ namespace Oscar
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
-            });
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
