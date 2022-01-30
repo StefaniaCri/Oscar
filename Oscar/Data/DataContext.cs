@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Oscar.Authentication;
+
 using Oscar.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Oscar.Data
 {
-    public class DataContext : IdentityDbContext<ApplicationUser>
+    public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
         public DbSet<Customer> Customers;

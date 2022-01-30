@@ -13,13 +13,13 @@ namespace Oscar.Models.DTO
 
         public decimal Price { get; set; }
 
-
+        public string PhotoFileName { get; set; }
         public ProductDTO(Product product)
         {
             this.Id = product.Id;
             this.Name = product.Name;
             this.Price = product.Price;
-            
+            this.PhotoFileName = product.PhotoFileName;
         }
     }
 }

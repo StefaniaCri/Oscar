@@ -21,6 +21,7 @@ namespace Oscar.Controllers
             _repository = repository;
         }
 
+        //adaugarea unei comenzi
         [HttpPost]
         public async Task<IActionResult> CreateOrder(AddOrder dto)
         {
@@ -37,6 +38,7 @@ namespace Oscar.Controllers
             return Ok(new OrderDTO(newOrder));
         }
 
+        //aduce toate comenzile date de un client
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAllOrderofClient(int id)
         {
@@ -52,8 +54,9 @@ namespace Oscar.Controllers
             return Ok(returnOrders);
         }
 
+        //update pentru cand o comanda a fost livrata
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePrice(int id)
+        public async Task<IActionResult> Update(int id)
         {
             Order order = await _repository.GetByIdAsync(id);
 

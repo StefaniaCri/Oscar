@@ -24,6 +24,7 @@ namespace Oscar.Controllers
 
         [HttpPost]
 
+        //adaugarea unui nou client in BD
         public async Task<IActionResult> CreateCustomer(CreateClient dto)
         {
             Customer newClient = new Customer();
@@ -41,6 +42,7 @@ namespace Oscar.Controllers
 
         }
 
+        //Toti clientii si adresele lor
         [HttpGet]
         public async Task<IActionResult> GetAllClients()
         {
@@ -56,9 +58,20 @@ namespace Oscar.Controllers
             return Ok(customersToReturn);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCustomerbyId(int id)
+        {
+            var customer = await _repository.GetByIdAsync(id);
+            if(customer == null)
+            {
+                return NotFound("Customer not found");
+            }
+            return Ok(customer);
+        }
 
+        //Update pentru client: isi poate schimba numele sau numarul de telefon
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePrice(int id, string phone = "idem", string first = "idem",string last="idem")
+        public async Task<IActionResult> Update(int id, string phone = "idem", string first = "idem",string last="idem")
         {
             Customer cust = await _repository.GetByIdAsync(id);
 
@@ -80,6 +93,7 @@ namespace Oscar.Controllers
 
         }
 
+        //stergerea unui client din db
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCust(int id)
         {

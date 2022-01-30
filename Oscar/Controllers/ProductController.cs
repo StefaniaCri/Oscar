@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Oscar.Models.DTO;
 using Oscar.Models.Entities;
 using Oscar.Repositories.ProductRepository;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +18,15 @@ namespace Oscar.Controllers
     {
 
         private readonly IProductRepository _repository;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductController(IProductRepository repository)
+        public ProductController(IProductRepository repository, IWebHostEnvironment env)
         {
             _repository = repository;
+            _env = env;
         }
+
+        //adaugarea unui nou produs in bd
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductDTO dto)
         {
@@ -28,7 +34,7 @@ namespace Oscar.Controllers
 
             newProduct.Name = dto.Name;
             newProduct.Price = dto.Price;
-
+            newProduct.PhotoFileName = dto.PhotoFileName;
             _repository.Create(newProduct);
 
             await _repository.SaveAsync();
@@ -37,6 +43,7 @@ namespace Oscar.Controllers
 
         }
 
+        //lisatrea tuturor produselor
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -52,6 +59,7 @@ namespace Oscar.Controllers
             return Ok(returnProducts);
         }
 
+        //listarea produselor care au pretul mai mic decat un pret dat ca parametru
         [HttpGet("{price}")]
         public async Task<IActionResult> GetAllProductsWithPriceSmaller(decimal price)
         {
@@ -66,7 +74,8 @@ namespace Oscar.Controllers
 
             return Ok(returnProducts);
         }
-
+        //modificarea pretului unui produs
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePrice(int id, decimal newprice)
         {
@@ -84,9 +93,11 @@ namespace Oscar.Controllers
             return Ok(new ProductDTO(product));
 
         }
+        
+        //sterge dupa id
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct( int id)
         {
             var product = await _repository.GetByIdAsync(id);
 
@@ -101,5 +112,33 @@ namespace Oscar.Controllers
 
             return NoContent();
         }
+
+
+        //adaugarea de poze a produselor
+        [Route("SaveFile")]
+        [HttpPost]
+        public JsonResult SaveFile()
+        {
+            try
+            {
+                var httpRequest = Request.Form;
+                var postedFile = httpRequest.Files[0];
+                string filename = postedFile.FileName;
+                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
+
+                using (var stream = new FileStream(physicalPath, FileMode.Create))
+                {
+                    postedFile.CopyTo(stream);
+                }
+
+                return new JsonResult(filename);
+            }
+            catch (Exception)
+            {
+
+                return new JsonResult("anonymous.png");
+            }
+        }
+
     }
 }
