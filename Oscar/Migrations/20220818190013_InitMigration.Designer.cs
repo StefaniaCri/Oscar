@@ -10,8 +10,8 @@ using Oscar.Data;
 namespace Oscar.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220125203942_data")]
-    partial class data
+    [Migration("20220818190013_InitMigration")]
+    partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -100,7 +100,9 @@ namespace Oscar.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
