@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Oscar.Models.DTO;
 using Oscar.Models.Entities;
@@ -10,16 +11,18 @@ using System.Threading.Tasks;
 
 namespace Oscar.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
-
+        private readonly IMapper _mapper;
         private readonly ICustomerRepository _repository;
 
-        public CustomerController(ICustomerRepository repository)
+        public CustomerController(ICustomerRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -27,18 +30,11 @@ namespace Oscar.Controllers
         //adaugarea unui nou client in BD
         public async Task<IActionResult> CreateCustomer(CreateClient dto)
         {
-            Customer newClient = new Customer();
+            var customer = _mapper.Map<Customer>(dto);
 
-            newClient.FirstName = dto.FirstName;
-            newClient.LastName = dto.LastName;
-            newClient.Adress = dto.Adress;
-            newClient.Phone = dto.Phone;
-
-            _repository.Create(newClient);
-
+            _repository.Create(customer);
             await _repository.SaveAsync();
-
-            return Ok(new CustomerDTO(newClient));
+            return Ok(customer);
 
         }
 
@@ -47,28 +43,23 @@ namespace Oscar.Controllers
         public async Task<IActionResult> GetAllClients()
         {
             var customers = await _repository.GetAll().Include(a => a.Adress).ToListAsync();
-
-            var customersToReturn = new List<CustomerDTO>();
-
-            foreach (var cust in customers)
-            {
-                customersToReturn.Add(new CustomerDTO(cust));
-            }
-
-            return Ok(customersToReturn);
+            var customerDTO = _mapper.Map<List<CustomerDTO>>(customers);
+            return Ok(customerDTO);
         }
 
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerbyId(int id)
         {
             var customer = await _repository.GetByIdAsync(id);
-            if(customer == null)
+            var customerDTO = _mapper.Map<CustomerDTO>(customer);
+            if (customerDTO == null)
             {
                 return NotFound("Customer not found");
             }
-            return Ok(customer);
+            return Ok(customerDTO);
         }
-
+        
         //Update pentru client: isi poate schimba numele sau numarul de telefon
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, string phone = "idem", string first = "idem",string last="idem")
@@ -89,7 +80,8 @@ namespace Oscar.Controllers
                 cust.LastName = last;
             await _repository.SaveAsync();
 
-            return Ok(new CustomerDTO(cust));
+            var customerDTO = _mapper.Map<CustomerDTO>(cust);
+            return Ok(customerDTO);
 
         }
 
@@ -111,5 +103,7 @@ namespace Oscar.Controllers
             return NoContent();
         }
 
+  
     }
-}
+    }
+

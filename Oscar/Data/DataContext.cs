@@ -17,6 +17,7 @@ namespace Oscar.Data
         public DbSet<Order> Orders;
         public DbSet<Product> Products;
         public DbSet<ProductOrder> ProductOrders;
+      
 
         internal object Include(Func<object, object> p)
         {
@@ -25,7 +26,6 @@ namespace Oscar.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
 
             //One to Many
 

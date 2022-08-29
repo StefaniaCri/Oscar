@@ -10,21 +10,12 @@ namespace Oscar.Models.DTO
     {
         public int Id { get; set; }
 
-        public String FirstName { get; set; }
+        public string Name { get; set; }
 
-        public String LastName { get; set; }
-
-        public Adress Adress { get; set; }
+        public AdressDTO Adress { get; set; }
 
         public String Phone { get; set; }
-        public CustomerDTO(Customer cust)
-        {
-            this.Id = cust.Id;
-            this.FirstName = cust.FirstName;
-            this.LastName = cust.LastName;
-            this.Adress = cust.Adress;
-            this.Phone = cust.Phone;
-        }
+    
 
     }
 }

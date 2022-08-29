@@ -14,17 +14,10 @@ namespace Oscar.Models.DTO
 
         public Boolean OrderFulfiled { get; set; }
 
-        public int CustomerId { get; set; }
+        public CustomerDTO CustomerDto { get; set; }
 
         public ICollection<ProductOrder> ProductOrders { get; set; }
 
-        public OrderDTO(Order order)
-        {
-            this.Id = order.Id;
-            this.OrderPlaced = order.OrderPlaced;
-            this.OrderFulfiled = order.OrderFulfiled;
-            this.CustomerId = order.CustomerId;
-            this.ProductOrders = order.ProductOrders;
-        }
+
     }
 }

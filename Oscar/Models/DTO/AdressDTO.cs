@@ -12,12 +12,5 @@ namespace Oscar.Models.DTO
         public string Street { get; set; }
         public string Country { get; set; }
 
-        public AdressDTO(Adress a)
-        {
-            this.City = a.City;
-            this.Street = a.Street;
-            this.Country = a.Country;
-        }
-
     }
 }

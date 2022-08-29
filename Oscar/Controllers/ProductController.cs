@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Oscar.Models.DTO;
@@ -19,27 +20,23 @@ namespace Oscar.Controllers
 
         private readonly IProductRepository _repository;
         private readonly IWebHostEnvironment _env;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductRepository repository, IWebHostEnvironment env)
+        public ProductController(IProductRepository repository, IWebHostEnvironment env, IMapper mapper)
         {
             _repository = repository;
             _env = env;
+            _mapper = mapper;
         }
 
         //adaugarea unui nou produs in bd
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductDTO dto)
         {
-            Product newProduct = new Product();
-
-            newProduct.Name = dto.Name;
-            newProduct.Price = dto.Price;
-            newProduct.PhotoFileName = dto.PhotoFileName;
-            _repository.Create(newProduct);
-
+            var product = _mapper.Map<Product>(dto);
+            _repository.Create(product);
             await _repository.SaveAsync();
-
-            return Ok(new ProductDTO(newProduct));
+            return Ok(product);
 
         }
 
@@ -48,15 +45,8 @@ namespace Oscar.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _repository.GetAll().ToListAsync();
-
-            var returnProducts = new List<ProductDTO>();
-
-            foreach (var product in products)
-            {
-                returnProducts.Add(new ProductDTO(product));
-            }
-
-            return Ok(returnProducts);
+            var productsDTO = _mapper.Map<List<ProductDTO>>(products);
+            return Ok(productsDTO);
         }
 
         //listarea produselor care au pretul mai mic decat un pret dat ca parametru
@@ -65,15 +55,11 @@ namespace Oscar.Controllers
         {
             var products = await _repository.GetAll().Where(p => p.Price < price).ToListAsync();
 
-            var returnProducts = new List<ProductDTO>();
-
-            foreach (var product in products)
-            {
-                returnProducts.Add(new ProductDTO(product));
-            }
+            var returnProducts = _mapper.Map<List<ProductDTO>>(products);
 
             return Ok(returnProducts);
         }
+    
         //modificarea pretului unui produs
         
         [HttpPut("{id}")]
@@ -90,7 +76,7 @@ namespace Oscar.Controllers
 
             await _repository.SaveAsync();
 
-            return Ok(new ProductDTO(product));
+            return Ok(_mapper.Map<ProductDTO>(product));
 
         }
         
@@ -113,32 +99,6 @@ namespace Oscar.Controllers
             return NoContent();
         }
 
-
-        //adaugarea de poze a produselor
-        [Route("SaveFile")]
-        [HttpPost]
-        public JsonResult SaveFile()
-        {
-            try
-            {
-                var httpRequest = Request.Form;
-                var postedFile = httpRequest.Files[0];
-                string filename = postedFile.FileName;
-                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
-
-                using (var stream = new FileStream(physicalPath, FileMode.Create))
-                {
-                    postedFile.CopyTo(stream);
-                }
-
-                return new JsonResult(filename);
-            }
-            catch (Exception)
-            {
-
-                return new JsonResult("anonymous.png");
-            }
-        }
 
     }
 }

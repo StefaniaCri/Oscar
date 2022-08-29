@@ -10,8 +10,8 @@ using Oscar.Data;
 namespace Oscar.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220818190013_InitMigration")]
-    partial class InitMigration
+    [Migration("20220828192027_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

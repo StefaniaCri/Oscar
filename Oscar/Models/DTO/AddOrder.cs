@@ -16,6 +16,8 @@ namespace Oscar.Models.DTO
 
         public int CustomerId { get; set; }
 
+        public Customer Customer { get; set; }
+
         public ICollection<ProductOrder> ProductOrders { get; set; }
     }
 }

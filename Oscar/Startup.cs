@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ using Newtonsoft.Json.Serialization;
 using Oscar.Data;
 using Oscar.Models.Constants;
 using Oscar.Models.Entities;
+using Oscar.Profiles;
 using Oscar.Repositories.CustomerRepository;
 using Oscar.Repositories.OrderRepository;
 using Oscar.Repositories.ProductRepository;
@@ -42,7 +44,6 @@ namespace Oscar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddCors(c => {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod()
                  .AllowAnyHeader());
@@ -70,6 +71,18 @@ namespace Oscar
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver
                 = new DefaultContractResolver());
 
+            //adaugam automapper
+            services.AddAutoMapper(typeof(Startup));
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddMvc();
 
         }
 
@@ -95,13 +108,7 @@ namespace Oscar
             });
 
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                Path.Combine(Directory.GetCurrentDirectory(), "Photos")),
-                RequestPath = "/Photos"
-            });
-
+          
         }
     }
 }
